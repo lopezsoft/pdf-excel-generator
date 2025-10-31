@@ -131,9 +131,9 @@ class ExcelExporter extends AbstractExporter
         $rowIndex = 1;
 
         foreach ($this->data as $row) {
-            $columnIndex = 1;
+            $columnIndex = 'A';
             foreach ($row as $value) {
-                $sheet->setCellValueByColumnAndRow($columnIndex, $rowIndex, $value);
+                $sheet->setCellValue($columnIndex . $rowIndex, $value);
                 $columnIndex++;
             }
             $rowIndex++;
