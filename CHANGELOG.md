@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.9] - 2025-01-31
+
+### Fixed
+- **ChromePool:** Apply same open_basedir handling as PdfExporter
+- ChromePool now validates Chrome path with error handler
+- detectChromePath() respects open_basedir restrictions
+- ChromePool trusts CHROME_PATH env when validation blocked
+
+### Changed
+- ChromePool::start() uses same validation logic as PdfExporter
+- ChromePool::detectChromePath() handles open_basedir gracefully
+
 ## [1.2.8] - 2025-01-31
 
 ### Added

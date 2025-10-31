@@ -3,7 +3,7 @@
     "description": "Generate PDFs and Excel files from HTML/Blade templates or data arrays for Laravel",
     "type": "library",
     "license": "MIT",
-    "version": "1.2.8",
+    "version": "1.2.9",
     "keywords": [
         "pdf",
         "excel",

@@ -151,9 +151,25 @@ class ChromePool implements ChromePoolInterface
 
         $this->chromePath = $chromePath ?? config('pdf-excel-generator.chrome_path') ?? $this->detectChromePath();
 
-        if (!file_exists($this->chromePath)) {
+        // Validar Chrome path solo si es posible (evitar errores de open_basedir)
+        $canValidate = false;
+        
+        set_error_handler(function() {}, E_WARNING);
+        $exists = file_exists($this->chromePath);
+        restore_error_handler();
+        
+        // Si file_exists funciona o es un symlink, validamos
+        if ($exists || is_link($this->chromePath)) {
+            $canValidate = true;
+        }
+        
+        // Solo lanzar excepción si podemos validar y el archivo no existe
+        if ($canValidate && !$exists && !is_link($this->chromePath)) {
             throw ChromeNotFoundException::invalidPath($this->chromePath);
         }
+        
+        // Si no podemos validar (open_basedir), confiamos en el path configurado
+        // y dejamos que Chrome falle con error más descriptivo si no existe
 
         // Usar puerto configurado o encontrar uno disponible
         $debugPort = $this->config['debug_port'] ?? $this->findAvailablePort();
@@ -217,8 +233,21 @@ class ChromePool implements ChromePoolInterface
     {
         // Intentar leer desde variable de entorno
         $envPath = getenv('CHROME_PATH');
-        if ($envPath !== false && file_exists($envPath)) {
-            return $envPath;
+        if ($envPath !== false) {
+            // Validar con manejo de open_basedir
+            set_error_handler(function() {}, E_WARNING);
+            $exists = file_exists($envPath);
+            restore_error_handler();
+            
+            if ($exists || is_link($envPath)) {
+                return $envPath;
+            }
+            
+            // Si CHROME_PATH está configurado pero no podemos validar (open_basedir),
+            // confiar en la configuración del usuario
+            if ($envPath) {
+                return $envPath;
+            }
         }
 
         // Detección según OS
@@ -242,7 +271,12 @@ class ChromePool implements ChromePoolInterface
         }
 
         foreach ($possiblePaths as $path) {
-            if (file_exists($path)) {
+            // Validar con manejo de open_basedir
+            set_error_handler(function() {}, E_WARNING);
+            $exists = file_exists($path);
+            restore_error_handler();
+            
+            if ($exists) {
                 return $path;
             }
         }
