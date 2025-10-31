@@ -129,6 +129,26 @@ echo $excel->url(); // URL descargable
 
 ## 🔧 Uso Avanzado
 
+### Subdirectorios automáticos
+
+La librería crea automáticamente los directorios necesarios:
+
+```php
+// Crea automáticamente 'storage/app/invoices/2025/'
+$pdf = PdfExcelGenerator::html($html)
+    ->savePdf('invoices/2025/invoice-001.pdf');
+
+// Crea 'storage/app/reports/monthly/'
+$excel = PdfExcelGenerator::data($data)
+    ->saveExcel('reports/monthly/sales.xlsx');
+
+// Estructura anidada profunda también funciona
+$pdf = PdfExcelGenerator::html($html)
+    ->savePdf('docs/clients/acme-corp/invoices/2025/10/invoice.pdf');
+```
+
+**Beneficio:** No necesitas crear manualmente los directorios con `mkdir()` o `Storage::makeDirectory()`. La librería lo hace por ti.
+
 ### Configurar formato y disco
 
 ```php

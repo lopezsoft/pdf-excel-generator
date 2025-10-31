@@ -109,6 +109,9 @@ abstract class AbstractExporter implements ExporterInterface
         // Validar seguridad de la ruta
         $this->pathValidator->validateSecurePath($sanitizedFilename);
 
+        // Crear directorios si no existen
+        $this->ensureDirectoryExists($sanitizedFilename);
+
         // Generar el contenido
         $content = $this->generate();
 
@@ -192,6 +195,34 @@ abstract class AbstractExporter implements ExporterInterface
         // Por defecto, solo verificamos que no esté vacío
         if (empty($content)) {
             throw ExportException::streamFailed('Generated content is empty');
+        }
+    }
+
+    /**
+     * Asegura que el directorio de destino exista.
+     *
+     * Si el filename contiene directorios (ej: 'docs/invoice.pdf'),
+     * crea automáticamente la estructura de carpetas en el disco.
+     *
+     * @param string $filename Ruta completa del archivo
+     * @return void
+     */
+    protected function ensureDirectoryExists(string $filename): void
+    {
+        // Obtener el directorio del path
+        $directory = dirname($filename);
+
+        // Si es solo '.' significa que no hay subdirectorio
+        if ($directory === '.' || $directory === '') {
+            return;
+        }
+
+        // Verificar si el directorio ya existe
+        $storage = Storage::disk($this->disk);
+        
+        if (!$storage->exists($directory)) {
+            // Crear el directorio con permisos recursivos
+            $storage->makeDirectory($directory);
         }
     }
 }

@@ -12,5 +12,7 @@ phpunit.xml
 /test-output/
 test-manual.php
 test-improvements.php
+test-directory-creation.php
+test-directory-logic.php
 generate-test-files.php
 package-lock.json
