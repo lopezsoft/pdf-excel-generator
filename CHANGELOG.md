@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-10-30
+
+### Added
+- Chrome Pool configuration section in `config/pdf-excel-generator.php`
+- New configuration options for Chrome Pool:
+  - `chrome_pool.enabled` - Enable/disable Chrome Pool
+  - `chrome_pool.debug_port` - Custom debug port (default: auto-select)
+  - `chrome_pool.startup_timeout` - Timeout for Chrome startup (default: 5s)
+  - `chrome_pool.connection_retries` - Connection retry attempts (default: 3)
+  - `chrome_pool.auto_restart` - Auto-restart on crash (default: true)
+- Environment variables support:
+  - `CHROME_POOL_ENABLED`
+  - `CHROME_POOL_DEBUG_PORT`
+  - `CHROME_POOL_STARTUP_TIMEOUT`
+  - `CHROME_POOL_CONNECTION_RETRIES`
+  - `CHROME_POOL_AUTO_RESTART`
+- `isEnabled()` method in `ChromePool` to check if pool is enabled
+- Comprehensive configuration documentation in README
+- Configuration table with all options and defaults
+
+### Improved
+- Chrome Pool now respects configuration settings
+- Better error handling with configurable retries
+- More control over pool behavior without code changes
+- Prevents accidental pool usage in low-memory environments
+- Production-ready with sensible defaults
+
+### Changed
+- Chrome Pool is now **disabled by default** (must be explicitly enabled)
+- `start()` method now throws exception if pool is disabled in config
+
 ## [1.1.1] - 2025-10-30
 
 ### Added
