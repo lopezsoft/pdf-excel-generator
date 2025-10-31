@@ -92,7 +92,24 @@ class PdfExporter extends AbstractExporter
                 }
             }
 
-            return $browsershot->pdf();
+            // En Windows, pdf() tiene problemas de encoding.
+            // Usamos archivo temporal para garantizar integridad
+            $tempFile = tempnam(sys_get_temp_dir(), 'pdf_') . '.pdf';
+            
+            try {
+                $browsershot->save($tempFile);
+                $content = file_get_contents($tempFile);
+                
+                if ($content === false) {
+                    throw ExportException::streamFailed('Failed to read temporary PDF file');
+                }
+                
+                return $content;
+            } finally {
+                if (file_exists($tempFile)) {
+                    @unlink($tempFile);
+                }
+            }
         } catch (ChromeNotFoundException $e) {
             throw $e;
         } catch (\Throwable $e) {
