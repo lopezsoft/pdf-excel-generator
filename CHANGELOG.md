@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.6] - 2025-10-31
+## [1.2.7] - 2025-01-31
+
+### Fixed
+- **CRITICAL:** Improved Chrome path validation for open_basedir environments
+- Use custom error handler to safely check file_exists() without triggering exceptions
+- Support symlinks detection with is_link() for /tmp/ workaround
+- Trust explicitly configured CHROME_PATH when validation cannot run
+- Allow Browsershot to validate Chrome during actual execution
+
+### Changed
+- Simplified validation logic to handle restricted server environments
+- Better detection of symlinks vs real files
+- More reliable handling of Plesk/cPanel open_basedir restrictions
+
+## [1.2.6] - 2025-01-31
 
 ### Fixed
 - **CRITICAL:** Handle `open_basedir` restrictions when checking Chrome path

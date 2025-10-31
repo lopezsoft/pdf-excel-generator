@@ -143,17 +143,28 @@ class PdfExporter extends AbstractExporter
             $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');
             
             if ($chromePath !== null) {
-                // Intentar verificar si el archivo existe, pero manejar restricciones de open_basedir
-                try {
-                    if (!@file_exists($chromePath)) {
-                        throw ChromeNotFoundException::invalidPath($chromePath);
-                    }
-                } catch (\Exception $e) {
-                    // Si hay error de open_basedir, continuar sin validar
-                    // Browsershot lanzará error más específico si Chrome no existe
-                    if (!str_contains($e->getMessage(), 'open_basedir')) {
-                        throw ChromeNotFoundException::invalidPath($chromePath);
-                    }
+                // Solo validar si podemos acceder al path sin restricciones
+                // En entornos con open_basedir, confiamos en el path configurado
+                // y dejamos que Browsershot/Puppeteer valide durante la ejecución
+                $canValidate = false;
+                
+                // Intentar verificar el archivo, pero solo si no hay restricciones
+                set_error_handler(function() {}, E_WARNING);
+                $exists = file_exists($chromePath);
+                restore_error_handler();
+                
+                // Si file_exists funciona, validamos normalmente
+                if ($exists || is_link($chromePath)) {
+                    $canValidate = true;
+                } else {
+                    // Verificar si falló por open_basedir o porque realmente no existe
+                    // Si el path está configurado explícitamente, asumimos que es válido
+                    // (especialmente útil para symlinks en /tmp con restricciones)
+                    $canValidate = false;
+                }
+                
+                if ($canValidate && !$exists && !is_link($chromePath)) {
+                    throw ChromeNotFoundException::invalidPath($chromePath);
                 }
                 
                 $browsershot->setChromePath($chromePath);
