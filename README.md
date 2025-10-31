@@ -414,6 +414,45 @@ try {
 }
 ```
 
+## 🔧 Troubleshooting
+
+### Error: "Chrome/Chromium not found"
+
+Si obtienes este error, ejecuta el script de diagnóstico:
+
+```bash
+php test-chrome-config.php
+```
+
+Este script verificará:
+- ✅ Si Chrome/Chromium está instalado
+- ✅ Si la ruta en `.env` es correcta
+- ✅ Si los permisos son adecuados
+- ✅ Si las dependencias están instaladas
+- ✅ Generará un PDF de prueba
+
+**Soluciones rápidas:**
+
+1. **Instalar Chrome (Ubuntu 22.04):**
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+sudo apt-get install -f
+```
+
+2. **Configurar en .env:**
+```env
+CHROME_PATH=/usr/bin/google-chrome
+```
+
+3. **Verificar permisos:**
+```bash
+chmod +x /usr/bin/google-chrome
+```
+
+Para más detalles, consulta **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** con soluciones completas.
+
+
 ## ⚡ Optimización: Chrome Pool (Avanzado)
 
 Para proyectos que generan **muchos PDFs simultáneamente** (>10/min), puedes usar el **Chrome Pool** para reutilizar instancias de Chrome y reducir el tiempo de generación de **~4s a ~1.5s**.

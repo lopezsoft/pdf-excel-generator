@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2025-10-31
+
+### Fixed
+- **CRITICAL:** `PdfExporter` now automatically reads `chrome_path` from configuration
+- Chrome path is now loaded from `config('pdf-excel-generator.chrome_path')` when not manually set
+- Fixed issue where `CHROME_PATH` in `.env` was being ignored
+
+### Improved
+- Enhanced `ChromeNotFoundException` error messages with detailed diagnostics
+- Error messages now show current configuration values (env and config)
+- Added step-by-step installation instructions in error messages
+- Error messages include common Chrome paths for Ubuntu/Debian
+
+### Added
+- `TROUBLESHOOTING.md` - Comprehensive troubleshooting guide
+- `test-chrome-config.php` - Interactive diagnostic script that:
+  - Verifies Chrome/Chromium installation
+  - Checks environment variables and configuration
+  - Tests file permissions and executability
+  - Validates dependencies on Linux
+  - Generates a test PDF to verify everything works
+  - Provides specific recommendations based on findings
+- Troubleshooting section in README with quick solutions
+- Documentation for Ubuntu 22.04 server setup
+
+### Changed
+- Chrome path detection order: manual > config > auto-detection
+- More informative error messages for debugging Chrome issues
+
 ## [1.2.2] - 2025-10-30
 
 ### Fixed
@@ -123,7 +152,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.2...v1.2.3
+[1.2.2]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.1.0
 [1.0.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.0.0

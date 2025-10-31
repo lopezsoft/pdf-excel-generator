@@ -131,12 +131,14 @@ class PdfExporter extends AbstractExporter
                 )
                 ->showBackground($this->printBackground);
 
-            // Configurar Chrome path si está especificado
-            if ($this->chromePath !== null) {
-                if (!file_exists($this->chromePath)) {
-                    throw ChromeNotFoundException::invalidPath($this->chromePath);
+            // Configurar Chrome path: usar el especificado manualmente, o el de configuración, o detección automática
+            $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');
+            
+            if ($chromePath !== null) {
+                if (!file_exists($chromePath)) {
+                    throw ChromeNotFoundException::invalidPath($chromePath);
                 }
-                $browsershot->setChromePath($this->chromePath);
+                $browsershot->setChromePath($chromePath);
             }
 
             // Aplicar opciones adicionales
