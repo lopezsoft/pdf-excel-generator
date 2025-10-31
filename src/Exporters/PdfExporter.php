@@ -41,6 +41,11 @@ class PdfExporter extends AbstractExporter
     ];
 
     /**
+     * Imprimir backgrounds (colores de fondo e imágenes de fondo).
+     */
+    private bool $printBackground = true;
+
+    /**
      * Establece el path de Chrome.
      *
      * @param string|null $path
@@ -77,6 +82,21 @@ class PdfExporter extends AbstractExporter
     }
 
     /**
+     * Habilita o deshabilita la impresión de backgrounds (colores e imágenes de fondo).
+     *
+     * Por defecto está habilitado (true) para que los colores de fondo se rendericen.
+     * Si se deshabilita (false), los fondos se omiten (comportamiento clásico de impresión).
+     *
+     * @param bool $print
+     * @return self
+     */
+    public function printBackground(bool $print = true): self
+    {
+        $this->printBackground = $print;
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function validate(): bool
@@ -108,7 +128,8 @@ class PdfExporter extends AbstractExporter
                     $this->margins['right'],
                     $this->margins['bottom'],
                     $this->margins['left']
-                );
+                )
+                ->showBackground($this->printBackground);
 
             // Configurar Chrome path si está especificado
             if ($this->chromePath !== null) {

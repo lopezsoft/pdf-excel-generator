@@ -109,6 +109,45 @@ $pdf = PdfExcelGenerator::html($html)
     ->savePdf('output.pdf');
 ```
 
+### Imprimir Colores de Fondo
+
+Por defecto, los colores e imágenes de fondo **se imprimen** en el PDF. Si necesitas deshabilitarlo:
+
+```php
+// CON backgrounds (por defecto) - Recomendado para facturas, reportes con diseño
+$pdf = PdfExcelGenerator::html($html)
+    ->printBackground(true) // Opcional, ya está habilitado por defecto
+    ->savePdf('invoice.pdf');
+
+// SIN backgrounds - Estilo clásico de impresión
+$pdf = PdfExcelGenerator::html($html)
+    ->printBackground(false)
+    ->savePdf('simple.pdf');
+```
+
+**Ejemplo con tabla coloreada:**
+
+```php
+$html = '
+<table>
+    <thead style="background-color: #007bff; color: white;">
+        <tr><th>Producto</th><th>Precio</th></tr>
+    </thead>
+    <tbody>
+        <tr style="background-color: #f8f9fa;">
+            <td>Item 1</td><td>$100</td>
+        </tr>
+        <tr style="background-color: #ffffff;">
+            <td>Item 2</td><td>$200</td>
+        </tr>
+    </tbody>
+</table>
+';
+
+// Los backgrounds azul y gris se renderizarán correctamente
+$result = PdfExcelGenerator::html($html)->savePdf('tabla.pdf');
+```
+
 ### Generar Excel desde Datos
 
 ```php

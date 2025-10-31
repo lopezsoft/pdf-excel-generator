@@ -181,6 +181,20 @@ class PdfExcelGenerator
     }
 
     /**
+     * Habilita o deshabilita la impresión de backgrounds en PDFs.
+     *
+     * Por defecto está habilitado para renderizar colores e imágenes de fondo.
+     *
+     * @param bool $print true para imprimir backgrounds, false para omitirlos
+     * @return self
+     */
+    public function printBackground(bool $print = true): self
+    {
+        $this->pdfExporter->printBackground($print);
+        return $this;
+    }
+
+    /**
      * Guarda como PDF y retorna el resultado.
      *
      * @param string $filename Nombre del archivo (con extensión .pdf)

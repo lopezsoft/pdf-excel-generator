@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2025-10-30
+
+### Fixed
+- **CRITICAL:** Background colors and images now render correctly in PDFs
+- Added `showBackground(true)` to Browsershot configuration (was missing)
+- HTML elements with `background-color`, `background-image`, etc. now display properly
+
+### Added
+- `printBackground(bool)` method to enable/disable background printing
+- Backgrounds enabled by default for better visual fidelity
+- Tests for background rendering (`BackgroundPrintTest`)
+- README documentation for background printing with examples
+
+### Changed
+- PDFs now render backgrounds by default (matches browser print behavior)
+- Can be disabled with `->printBackground(false)` if needed
+
 ## [1.2.1] - 2025-10-30
 
 ### Fixed
