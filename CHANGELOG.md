@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-10-30
+
+### Added
+- HTML normalization to reduce PDF size by 20-30% (inspired by CustomPdf)
+- PDF header validation (`%PDF`) to detect corruption early
+- `InvalidPdfException` for better error handling
+- Custom margins support with `margins()` and `customMargins()` methods
+- `ChromePool` service for high-concurrency scenarios (reduces generation time from 4s to 1.5s)
+- `ChromePoolInterface` contract for extensibility
+- Comprehensive unit tests (`PdfValidationTest` and `ExcelValidationTest`)
+- Template Method pattern for content validation in `AbstractExporter`
+
+### Improved
+- `PdfExporter` now normalizes HTML before rendering (removes excessive whitespace from Blade templates)
+- `AbstractExporter::save()` now validates generated content before saving
+- README with optimization guidelines and Chrome Pool usage documentation
+- Better error messages with hex dump for corrupted PDFs
+
+### Fixed
+- PDF corruption detection now happens before file is saved to disk
+- Improved margin configuration (individual top/right/bottom/left support)
+
 ## [1.0.0] - 2025-10-30
 
 ### Added
@@ -26,5 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.1.0
 [1.0.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.0.0
