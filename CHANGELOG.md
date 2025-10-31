@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-10-30
+
+### Added
+- Automatic directory creation when saving files with subdirectories
+- `ensureDirectoryExists()` method in `AbstractExporter` for recursive directory creation
+- `DirectoryCreationTest` unit tests (8 test cases)
+- README section explaining automatic directory creation
+
+### Fixed
+- Files can now be saved in nested paths without manually creating directories (e.g., `savePdf('docs/invoices/2025/invoice.pdf')`)
+- Prevents "directory not found" errors when using subdirectories
+- Works seamlessly with all configured disks (local, s3, public, etc.)
+
 ## [1.1.0] - 2025-10-30
 
 ### Added
@@ -48,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.1.0
 [1.0.0]: https://github.com/lopezsoft/pdf-excel-generator/releases/tag/v1.0.0
