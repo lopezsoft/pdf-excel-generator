@@ -75,4 +75,49 @@ class PathValidatorTest extends TestCase
             $this->validator->sanitizeFilename('document!@#test.pdf')
         );
     }
+
+    public function test_sanitizes_filename_preserves_subdirectories(): void
+    {
+        // Subdirectorio simple
+        $this->assertEquals(
+            '1/e3efe7ab-b028-11f0-be83-d843ae899220.pdf',
+            $this->validator->sanitizeFilename('1/e3efe7ab-b028-11f0-be83-d843ae899220.pdf')
+        );
+
+        // Múltiples niveles
+        $this->assertEquals(
+            'docs/invoices/invoice_001.pdf',
+            $this->validator->sanitizeFilename('docs/invoices/invoice 001.pdf')
+        );
+
+        // Rutas anidadas profundas
+        $this->assertEquals(
+            'a/b/c/d/file.xlsx',
+            $this->validator->sanitizeFilename('a/b/c/d/file.xlsx')
+        );
+
+        // Con caracteres especiales en el nombre (no en directorio)
+        $this->assertEquals(
+            'reports/2025/monthly_report.pdf',
+            $this->validator->sanitizeFilename('reports/2025/monthly@report.pdf')
+        );
+    }
+
+    public function test_sanitizes_filename_handles_backslashes(): void
+    {
+        // Windows style paths
+        $this->assertEquals(
+            'docs/reports/report.pdf',
+            $this->validator->sanitizeFilename('docs\\reports\\report.pdf')
+        );
+    }
+
+    public function test_sanitizes_filename_without_directory(): void
+    {
+        // Sin subdirectorio
+        $this->assertEquals(
+            'simple.pdf',
+            $this->validator->sanitizeFilename('simple.pdf')
+        );
+    }
 }

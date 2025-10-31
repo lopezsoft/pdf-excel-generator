@@ -93,20 +93,35 @@ class PathValidator
 
     /**
      * Sanitiza un nombre de archivo removiendo caracteres peligrosos.
+     * Preserva la estructura de directorios en el path.
      *
-     * @param string $filename Nombre del archivo
-     * @return string Nombre sanitizado
+     * @param string $filename Nombre del archivo (puede incluir subdirectorios)
+     * @return string Nombre sanitizado con directorios preservados
      */
     public function sanitizeFilename(string $filename): string
     {
-        // Remover caracteres peligrosos pero mantener la extensión
-        $pathinfo = pathinfo($filename);
+        // Normalizar separadores de ruta
+        $normalized = str_replace('\\', '/', $filename);
+        
+        // Separar directorio y archivo
+        $directory = dirname($normalized);
+        $basename = basename($normalized);
+        
+        // Sanitizar solo el basename (no el directorio)
+        $pathinfo = pathinfo($basename);
         $name = $pathinfo['filename'] ?? '';
         $extension = $pathinfo['extension'] ?? '';
 
-        // Permitir solo caracteres alfanuméricos, guiones, underscores y puntos
+        // Permitir solo caracteres alfanuméricos, guiones, underscores y puntos en el nombre
         $name = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $name);
-
-        return $extension ? "{$name}.{$extension}" : $name;
+        
+        $sanitizedBasename = $extension ? "{$name}.{$extension}" : $name;
+        
+        // Reconstruir el path completo
+        if ($directory === '.' || $directory === '') {
+            return $sanitizedBasename;
+        }
+        
+        return "{$directory}/{$sanitizedBasename}";
     }
 }

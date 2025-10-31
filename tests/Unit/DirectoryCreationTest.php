@@ -188,4 +188,22 @@ class DirectoryCreationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists('pdfs/public-file.pdf'));
         $this->assertTrue(Storage::disk('public')->exists('pdfs'));
     }
+
+    /**
+     * @test
+     */
+    public function it_creates_numeric_subdirectory(): void
+    {
+        $html = '<html><body><h1>Invoice</h1></body></html>';
+        
+        $exporter = new PdfExporter();
+        $exporter->setHtml($html)->setDisk('local');
+        
+        // Caso del usuario: subdirectorio numérico con UUID
+        $result = $exporter->save('1/e3efe7ab-b028-11f0-be83-d843ae899220.pdf');
+        
+        // Verificar que se creó correctamente
+        $this->assertTrue(Storage::disk('local')->exists('1/e3efe7ab-b028-11f0-be83-d843ae899220.pdf'));
+        $this->assertTrue(Storage::disk('local')->exists('1'));
+    }
 }

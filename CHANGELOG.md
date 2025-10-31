@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-10-30
+
+### Fixed
+- **CRITICAL:** Fixed subdirectory creation when saving files with paths like `1/file.pdf`
+- `PathValidator::sanitizeFilename()` now correctly preserves directory structure
+- Files are now properly saved in nested subdirectories (e.g., `invoices/2025/10/invoice.pdf`)
+- Handles both forward slashes (`/`) and backslashes (`\`) in paths
+- Automatic directory creation now works for all export methods (PDF and Excel)
+
+### Added
+- Test for numeric subdirectory creation (`1/uuid.pdf` pattern)
+- Tests for `sanitizeFilename()` subdirectory preservation
+- Tests for backslash path handling
+
 ## [1.2.0] - 2025-10-30
 
 ### Added
