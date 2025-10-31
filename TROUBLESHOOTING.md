@@ -11,9 +11,64 @@ or configure the chrome_path in config/pdf-excel-generator.php
 ### Causa
 El paquete no puede localizar el ejecutable de Chrome/Chromium necesario para generar PDFs.
 
-### Soluciones
+---
 
-#### 1. Verificar que Chrome/Chromium esté instalado
+## ⚠️ Servidores con Restricción open_basedir (Plesk/cPanel)
+
+Si tu servidor tiene restricciones de PHP `open_basedir`, los symlinks a Chrome del sistema NO funcionarán porque el sistema operativo sigue el enlace a directorios bloqueados.
+
+### ✅ Solución DEFINITIVA para Plesk/cPanel
+
+**Instala Chrome localmente en tu proyecto usando Puppeteer:**
+
+```bash
+# 1. Entra a tu proyecto
+cd /var/www/vhosts/tu-dominio.com/httpdocs
+
+# 2. Instala Puppeteer
+npm install puppeteer
+
+# 3. Descarga Chrome (versión específica para tu proyecto)
+npx @puppeteer/browsers install chrome@stable
+```
+
+Esto descargará Chrome (~170MB) en `chrome/linux-XXXXXX/chrome-linux64/chrome`.
+
+**4. Encuentra el path exacto:**
+```bash
+ls -la chrome/linux-*/chrome-linux64/chrome
+# Ejemplo: chrome/linux-142.0.7444.59/chrome-linux64/chrome
+```
+
+**5. Configura en `.env`:**
+```env
+# Reemplaza con tu path real
+CHROME_PATH=/var/www/vhosts/tu-dominio.com/httpdocs/chrome/linux-142.0.7444.59/chrome-linux64/chrome
+```
+
+**6. Verifica que funcione:**
+```bash
+# Debe mostrar la versión
+/var/www/vhosts/tu-dominio.com/httpdocs/chrome/linux-142.0.7444.59/chrome-linux64/chrome --version
+```
+
+**7. Prueba la generación de PDF:**
+```bash
+php artisan tinker
+>>> use Lopezsoft\PdfExcelGenerator\Facades\PdfExcelGenerator;
+>>> $pdf = PdfExcelGenerator::html('<h1>Test</h1>')->savePdf('test.pdf');
+>>> echo $pdf->path();
+```
+
+✅ **Esto funciona porque Chrome está dentro del directorio permitido por `open_basedir`.**
+
+❌ **NO uses symlinks** (`ln -s`) porque `open_basedir` bloquea el acceso al target real del symlink.
+
+---
+
+## Instalación en Servidores SIN restricciones
+
+### 1. Verificar que Chrome/Chromium esté instalado
 
 **Ubuntu/Debian:**
 ```bash
@@ -40,7 +95,7 @@ sudo yum install google-chrome-stable
 sudo yum install chromium
 ```
 
-#### 2. Configurar la ruta en .env
+### 2. Configurar la ruta en .env
 
 Una vez instalado Chrome/Chromium, configura la ruta en tu archivo `.env`:
 

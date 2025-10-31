@@ -40,33 +40,69 @@ composer require lopezsoft/pdf-excel-generator
 php artisan vendor:publish --tag=pdf-excel-generator-config
 ```
 
-### Instalar Puppeteer (para PDFs)
+### Instalar Chrome/Puppeteer (para PDFs)
 
-La generación de PDFs requiere Puppeteer/Chrome. Instálalo con npm:
+La generación de PDFs requiere Chrome/Chromium. **Elige una de estas opciones:**
+
+#### Opción 1: Instalar Puppeteer con Chrome incluido (RECOMENDADO)
 
 ```bash
+# Instala Puppeteer en tu proyecto Laravel
+cd tu-proyecto
 npm install puppeteer
+
+# Descarga Chrome automáticamente
+npx @puppeteer/browsers install chrome@stable
 ```
 
-**Alternativa:** Si prefieres usar tu Chrome/Chromium local:
+Esto descarga Chrome en `chrome/linux-*/chrome-linux64/chrome`. Luego configura en `.env`:
 
-#### Ubuntu/Debian
+```env
+# Reemplaza la versión con la que se descargó
+CHROME_PATH=/ruta/completa/a/tu-proyecto/chrome/linux-142.0.7444.59/chrome-linux64/chrome
+```
+
+**✅ Ventajas:**
+- Funciona en servidores con restricciones `open_basedir` (Plesk, cPanel)
+- No requiere permisos de administrador
+- Chrome está aislado por proyecto
+- Versión específica y controlada
+
+#### Opción 2: Usar Chrome del sistema
+
+Si tienes acceso root o Chrome ya está instalado:
+
+**Ubuntu/Debian:**
 ```bash
+sudo apt-get install google-chrome-stable
+# O alternativa:
 sudo apt-get install chromium-browser
 ```
 
-#### macOS
+**macOS:**
 ```bash
 brew install --cask google-chrome
 ```
 
-#### Windows
+**Windows:**
 Descarga e instala Chrome desde [google.com/chrome](https://www.google.com/chrome/)
 
-Luego configura la ruta en `.env`:
+Luego configura en `.env`:
+
 ```env
+# Linux
+CHROME_PATH=/usr/bin/google-chrome
+# O
+CHROME_PATH=/usr/bin/chromium-browser
+
+# macOS
+CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# Windows
 CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe"
 ```
+
+⚠️ **Servidores con open_basedir (Plesk/cPanel):** Si tienes restricciones de PHP, usa la Opción 1 o consulta [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ## 🎯 Uso Básico
 

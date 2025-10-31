@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.8] - 2025-01-31
+
+### Added
+- ✅ **SOLUCIÓN DEFINITIVA para open_basedir documentada**
+- Guía completa de instalación de Chrome con Puppeteer local
+- Documentación actualizada en README.md con opción recomendada
+- TROUBLESHOOTING.md mejorado con sección específica para Plesk/cPanel
+- PLESK-CHROME-WORKAROUND.md con solución paso a paso probada
+
+### Changed
+- README.md ahora recomienda `npx @puppeteer/browsers install chrome@stable`
+- Documentación clarifica que symlinks NO funcionan con open_basedir
+- Guía de instalación reorganizada con opciones prioritizadas
+
+### Fixed
+- **CRÍTICO:** Documentado que Puppeteer v24+ requiere `@puppeteer/browsers`
+- Instrucciones actualizadas para versiones modernas de Puppeteer
+- Paths de ejemplo actualizados a estructura real de Chrome descargado
+
 ## [1.2.7] - 2025-01-31
 
 ### Fixed
