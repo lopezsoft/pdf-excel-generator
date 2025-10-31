@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.6] - 2025-10-31
+
+### Fixed
+- **CRITICAL:** Handle `open_basedir` restrictions when checking Chrome path
+- Skip file_exists() validation when open_basedir blocks access
+- Allows using symlinks in `/tmp/` to bypass open_basedir restrictions
+- Better error handling for restricted server environments
+
+### Changed
+- Chrome path validation now gracefully handles open_basedir errors
+- Browsershot will provide more specific error if Chrome is truly missing
+
 ## [1.2.5] - 2025-10-31
 
 ### Fixed
@@ -176,7 +188,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.5...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.6...HEAD
+[1.2.6]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.5...v1.2.6
 [1.2.5]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.4...v1.2.5
 [1.2.4]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.2...v1.2.3

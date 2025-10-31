@@ -143,9 +143,19 @@ class PdfExporter extends AbstractExporter
             $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');
             
             if ($chromePath !== null) {
-                if (!file_exists($chromePath)) {
-                    throw ChromeNotFoundException::invalidPath($chromePath);
+                // Intentar verificar si el archivo existe, pero manejar restricciones de open_basedir
+                try {
+                    if (!@file_exists($chromePath)) {
+                        throw ChromeNotFoundException::invalidPath($chromePath);
+                    }
+                } catch (\Exception $e) {
+                    // Si hay error de open_basedir, continuar sin validar
+                    // Browsershot lanzará error más específico si Chrome no existe
+                    if (!str_contains($e->getMessage(), 'open_basedir')) {
+                        throw ChromeNotFoundException::invalidPath($chromePath);
+                    }
                 }
+                
                 $browsershot->setChromePath($chromePath);
             }
 
