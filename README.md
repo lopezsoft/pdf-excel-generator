@@ -294,6 +294,27 @@ composer test
 composer test -- --coverage
 ```
 
+### Prueba Manual
+
+Si quieres probar la librería antes de integrarla:
+
+```bash
+# Instalar dependencias
+composer install
+npm install puppeteer
+
+# Crear archivo de prueba
+php -r "
+require 'vendor/autoload.php';
+use Lopezsoft\PdfExcelGenerator\Exporters\PdfExporter;
+
+\$pdf = new PdfExporter();
+\$pdf->setHtml('<h1>Test PDF</h1>');
+file_put_contents('test.pdf', \$pdf->stream());
+echo 'PDF generado: test.pdf';
+"
+```
+
 ## 🐛 Manejo de Errores
 
 ```php
