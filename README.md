@@ -40,7 +40,15 @@ composer require lopezsoft/pdf-excel-generator
 php artisan vendor:publish --tag=pdf-excel-generator-config
 ```
 
-### Instalar Chrome/Chromium (para PDFs)
+### Instalar Puppeteer (para PDFs)
+
+La generación de PDFs requiere Puppeteer/Chrome. Instálalo con npm:
+
+```bash
+npm install puppeteer
+```
+
+**Alternativa:** Si prefieres usar tu Chrome/Chromium local:
 
 #### Ubuntu/Debian
 ```bash
@@ -54,6 +62,11 @@ brew install --cask google-chrome
 
 #### Windows
 Descarga e instala Chrome desde [google.com/chrome](https://www.google.com/chrome/)
+
+Luego configura la ruta en `.env`:
+```env
+CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe"
+```
 
 ## 🎯 Uso Básico
 
