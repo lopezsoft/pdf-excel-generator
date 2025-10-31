@@ -43,6 +43,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Chrome Pool (Advanced)
+    |--------------------------------------------------------------------------
+    |
+    | Configuración del pool de Chrome para generación de PDFs de alta concurrencia.
+    | El pool reutiliza instancias de Chrome, reduciendo tiempo de generación de ~4s a ~1.5s.
+    |
+    | ADVERTENCIA: El pool consume ~150MB de RAM adicional. Solo usar si:
+    | - Generas >10 PDFs por minuto
+    | - Tu servidor tiene suficiente memoria (>2GB RAM recomendado)
+    | - Necesitas optimizar rendimiento en escenarios de alta carga
+    |
+    */
+    'chrome_pool' => [
+        /*
+         | Habilitar/deshabilitar Chrome Pool
+         | true: Usa pool de Chrome (mayor rendimiento, más memoria)
+         | false: Lanza Chrome por cada PDF (menor rendimiento, menos memoria)
+         */
+        'enabled' => env('CHROME_POOL_ENABLED', false),
+
+        /*
+         | Puerto de debugging remoto de Chrome
+         | Puerto donde Chrome escuchará conexiones WebSocket
+         | Si es null, se selecciona un puerto aleatorio disponible (9222-9999)
+         */
+        'debug_port' => env('CHROME_POOL_DEBUG_PORT', null),
+
+        /*
+         | Tiempo de espera en segundos para iniciar Chrome
+         | Incrementar si Chrome tarda en iniciar en servidores lentos
+         */
+        'startup_timeout' => env('CHROME_POOL_STARTUP_TIMEOUT', 5),
+
+        /*
+         | Reintentos para conectar al pool si falla
+         | Útil para recuperación automática si Chrome crashea
+         */
+        'connection_retries' => env('CHROME_POOL_CONNECTION_RETRIES', 3),
+
+        /*
+         | Reiniciar Chrome automáticamente si no responde
+         | Detecta crashes y reinicia el proceso automáticamente
+         */
+        'auto_restart' => env('CHROME_POOL_AUTO_RESTART', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | PDF Options
     |--------------------------------------------------------------------------
     |

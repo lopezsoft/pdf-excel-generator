@@ -55,11 +55,25 @@ class ChromePool implements ChromePoolInterface
     private ?string $chromePath = null;
 
     /**
+     * Configuración del pool.
+     *
+     * @var array<string, mixed>
+     */
+    private array $config = [];
+
+    /**
      * Constructor privado (Singleton).
      */
     private function __construct()
     {
-        // Singleton
+        // Cargar configuración
+        $this->config = config('pdf-excel-generator.chrome_pool', [
+            'enabled' => false,
+            'debug_port' => null,
+            'startup_timeout' => 5,
+            'connection_retries' => 3,
+            'auto_restart' => true,
+        ]);
     }
 
     /**
@@ -87,8 +101,12 @@ class ChromePool implements ChromePoolInterface
 
         // Verificar que Chrome sigue vivo
         if ($this->chromeProcess !== null && !$this->chromeProcess->isRunning()) {
-            // Chrome crasheó, reiniciar
-            $this->restart();
+            // Chrome crasheó, reiniciar si está habilitado
+            if ($this->config['auto_restart']) {
+                $this->restart();
+            } else {
+                throw new ChromeNotFoundException('Chrome pool process died and auto_restart is disabled');
+            }
         }
 
         return $this->wsEndpoint;
@@ -105,22 +123,40 @@ class ChromePool implements ChromePoolInterface
     }
 
     /**
+     * Verifica si el pool está habilitado en la configuración.
+     *
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return (bool) ($this->config['enabled'] ?? false);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function start(?string $chromePath = null): void
     {
+        // Verificar si el pool está habilitado
+        if (!$this->isEnabled()) {
+            throw new \RuntimeException(
+                'Chrome Pool is disabled. Enable it in config/pdf-excel-generator.php ' .
+                'by setting chrome_pool.enabled to true, or use CHROME_POOL_ENABLED=true in .env'
+            );
+        }
+
         if ($this->isActive()) {
             return; // Ya está iniciado
         }
 
-        $this->chromePath = $chromePath ?? $this->detectChromePath();
+        $this->chromePath = $chromePath ?? config('pdf-excel-generator.chrome_path') ?? $this->detectChromePath();
 
         if (!file_exists($this->chromePath)) {
             throw ChromeNotFoundException::invalidPath($this->chromePath);
         }
 
-        // Iniciar Chrome en modo headless con remote debugging
-        $debugPort = $this->findAvailablePort();
+        // Usar puerto configurado o encontrar uno disponible
+        $debugPort = $this->config['debug_port'] ?? $this->findAvailablePort();
         
         $command = [
             $this->chromePath,
@@ -135,15 +171,17 @@ class ChromePool implements ChromePoolInterface
         $this->chromeProcess = new Process($command);
         $this->chromeProcess->start();
 
-        // Esperar a que Chrome esté listo
-        sleep(2);
+        // Esperar según configuración
+        $startupTimeout = $this->config['startup_timeout'] ?? 5;
+        sleep(min($startupTimeout, 10)); // Máximo 10 segundos
 
-        // Obtener WebSocket endpoint
-        $this->wsEndpoint = $this->fetchWebSocketEndpoint($debugPort);
+        // Obtener WebSocket endpoint con reintentos
+        $retries = $this->config['connection_retries'] ?? 3;
+        $this->wsEndpoint = $this->fetchWebSocketEndpoint($debugPort, $retries);
 
         if ($this->wsEndpoint === null) {
             $this->stop();
-            throw new ChromeNotFoundException('Failed to start Chrome pool');
+            throw new ChromeNotFoundException('Failed to start Chrome pool after ' . $retries . ' retries');
         }
     }
 
@@ -247,14 +285,15 @@ class ChromePool implements ChromePoolInterface
      * Obtiene el WebSocket endpoint de Chrome.
      *
      * @param int $debugPort
+     * @param int $maxRetries Número máximo de reintentos
      * @return string|null
      */
-    private function fetchWebSocketEndpoint(int $debugPort): ?string
+    private function fetchWebSocketEndpoint(int $debugPort, int $maxRetries = 5): ?string
     {
         $url = "http://127.0.0.1:{$debugPort}/json/version";
 
-        // Intentar obtener endpoint (con reintentos)
-        for ($i = 0; $i < 5; $i++) {
+        // Intentar obtener endpoint (con reintentos configurables)
+        for ($i = 0; $i < $maxRetries; $i++) {
             $context = stream_context_create([
                 'http' => [
                     'timeout' => 2,

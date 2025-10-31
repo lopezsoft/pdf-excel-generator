@@ -379,20 +379,63 @@ try {
 
 Para proyectos que generan **muchos PDFs simultáneamente** (>10/min), puedes usar el **Chrome Pool** para reutilizar instancias de Chrome y reducir el tiempo de generación de **~4s a ~1.5s**.
 
-### Configuración
+### Habilitar en Configuración
+
+**1. Publicar el archivo de configuración** (si aún no lo hiciste):
+
+```bash
+php artisan vendor:publish --tag=pdf-excel-generator-config
+```
+
+**2. Editar `config/pdf-excel-generator.php`:**
+
+```php
+'chrome_pool' => [
+    'enabled' => true, // Habilitar Chrome Pool
+    'debug_port' => null, // Puerto automático (o especificar: 9222)
+    'startup_timeout' => 5, // Segundos para esperar que Chrome inicie
+    'connection_retries' => 3, // Reintentos si falla la conexión
+    'auto_restart' => true, // Reiniciar automáticamente si Chrome crashea
+],
+```
+
+**3. O usar variables de entorno en `.env`:**
+
+```env
+# Chrome Pool Configuration
+CHROME_POOL_ENABLED=true
+CHROME_POOL_DEBUG_PORT=9222
+CHROME_POOL_STARTUP_TIMEOUT=5
+CHROME_POOL_CONNECTION_RETRIES=3
+CHROME_POOL_AUTO_RESTART=true
+```
+
+### Uso en la Aplicación
 
 ```php
 use Lopezsoft\PdfExcelGenerator\Services\ChromePool;
 
 // En AppServiceProvider::boot() o al inicio de tu aplicación
-ChromePool::getInstance()->start();
+if (ChromePool::getInstance()->isEnabled()) {
+    ChromePool::getInstance()->start();
+}
 
 // Usar normalmente (automáticamente detecta el pool)
 $pdf = PdfExcelGenerator::html($html)->savePdf('output.pdf');
 
-// Al finalizar la aplicación (opcional, Laravel lo hace automáticamente)
+// Al finalizar la aplicación (opcional)
 ChromePool::getInstance()->stop();
 ```
+
+### Opciones de Configuración
+
+| Opción | Tipo | Default | Descripción |
+|--------|------|---------|-------------|
+| `enabled` | bool | `false` | Habilitar/deshabilitar Chrome Pool |
+| `debug_port` | int\|null | `null` | Puerto para debugging (null = automático) |
+| `startup_timeout` | int | `5` | Segundos para esperar que Chrome inicie |
+| `connection_retries` | int | `3` | Reintentos si falla la conexión al pool |
+| `auto_restart` | bool | `true` | Reiniciar Chrome si crashea |
 
 ### Cuándo Usar Chrome Pool
 
@@ -400,14 +443,33 @@ ChromePool::getInstance()->stop();
 - Generas >10 PDFs por minuto
 - Tu aplicación tiene alta concurrencia
 - Tienes un worker dedicado para PDFs
+- Tu servidor tiene >2GB RAM disponible
 
 ❌ **NO usar si:**
 - Generas PDFs esporádicamente (<5/min)
 - Tu servidor tiene memoria limitada (<2GB RAM)
 - Solo generas PDFs bajo demanda del usuario
+- Ejecutas en entorno compartido (shared hosting)
 
 **Advertencia:** El pool mantiene Chrome en memoria (~150MB). Solo usar si el beneficio de rendimiento justifica el consumo de recursos.
+
+### Monitoreo del Pool
+
+```php
+// Verificar si el pool está activo
+if (ChromePool::getInstance()->isActive()) {
+    echo "Chrome Pool está corriendo";
+}
+
+// Verificar si está habilitado en config
+if (ChromePool::getInstance()->isEnabled()) {
+    echo "Chrome Pool está habilitado";
+}
+
+// Reiniciar manualmente si es necesario
+ChromePool::getInstance()->restart();
 ```
+````
 
 ## 📚 API Reference
 
