@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.5] - 2025-10-31
+
+### Fixed
+- **CRITICAL:** Added additional Chrome flags for better server compatibility
+- Added `--disable-gpu`, `--disable-software-rasterizer`, `--disable-extensions`, `--disable-setuid-sandbox`
+- Improved error messages showing original Chrome execution error
+- Better debugging information when Chrome path exists but execution fails
+
+### Improved
+- Error messages now include original exception details
+- Suggests running Chrome as www-data user for debugging
+
 ## [1.2.4] - 2025-10-31
 
 ### Fixed
@@ -164,7 +176,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.4...v1.2.5
 [1.2.4]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.1...v1.2.2

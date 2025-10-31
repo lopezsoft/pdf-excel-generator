@@ -131,7 +131,13 @@ class PdfExporter extends AbstractExporter
                 )
                 ->showBackground($this->printBackground)
                 ->noSandbox() // Requerido para servidores Linux
-                ->setOption('args', ['--disable-dev-shm-usage']); // Previene errores de memoria compartida
+                ->setOption('args', [
+                    '--disable-dev-shm-usage',  // Previene errores de memoria compartida
+                    '--disable-gpu',             // GPU no disponible en servidores
+                    '--disable-software-rasterizer',
+                    '--disable-extensions',
+                    '--disable-setuid-sandbox',
+                ]);
 
             // Configurar Chrome path: usar el especificado manualmente, o el de configuración, o detección automática
             $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');
@@ -173,7 +179,20 @@ class PdfExporter extends AbstractExporter
         } catch (\Throwable $e) {
             // Si Chrome no está instalado, Browsershot lanzará una excepción
             if (str_contains($e->getMessage(), 'chrome') || str_contains($e->getMessage(), 'chromium')) {
-                throw ChromeNotFoundException::notInstalled();
+                // Mostrar más detalles del error para debugging
+                $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');
+                $errorDetails = PHP_EOL . 'Original error: ' . $e->getMessage();
+                
+                if ($chromePath && file_exists($chromePath)) {
+                    $errorDetails .= PHP_EOL . 'Chrome path exists but execution failed.';
+                    $errorDetails .= PHP_EOL . 'Try running: sudo -u www-data ' . $chromePath . ' --version';
+                }
+                
+                throw new ChromeNotFoundException(
+                    ChromeNotFoundException::notInstalled()->getMessage() . $errorDetails,
+                    500,
+                    $e
+                );
             }
 
             throw ExportException::streamFailed($e->getMessage());
