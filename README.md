@@ -95,6 +95,20 @@ $pdf = PdfExcelGenerator::blade('invoices.show', [
 return $pdf->download(); // Descarga directa
 ```
 
+### Configurar Márgenes del PDF
+
+```php
+// Márgenes iguales para todos los lados
+$pdf = PdfExcelGenerator::html($html)
+    ->margins(20) // 20mm todos los lados
+    ->savePdf('output.pdf');
+
+// Márgenes personalizados (top, right, bottom, left)
+$pdf = PdfExcelGenerator::html($html)
+    ->customMargins(25, 15, 25, 15) // arriba, derecha, abajo, izquierda
+    ->savePdf('output.pdf');
+```
+
 ### Generar Excel desde Datos
 
 ```php
@@ -320,6 +334,7 @@ echo 'PDF generado: test.pdf';
 ```php
 use Lopezsoft\PdfExcelGenerator\Exceptions\ChromeNotFoundException;
 use Lopezsoft\PdfExcelGenerator\Exceptions\InvalidTemplateException;
+use Lopezsoft\PdfExcelGenerator\Exceptions\InvalidPdfException;
 use Lopezsoft\PdfExcelGenerator\Exceptions\ExportException;
 
 try {
@@ -330,10 +345,48 @@ try {
 } catch (InvalidTemplateException $e) {
     // Template Blade no existe
     Log::error('Template no encontrado: ' . $e->getMessage());
+} catch (InvalidPdfException $e) {
+    // PDF generado es corrupto o inválido
+    Log::error('PDF corrupto: ' . $e->getMessage());
+    return response()->json(['error' => 'Error al generar PDF'], 500);
 } catch (ExportException $e) {
     // Error genérico de exportación
     return response()->json(['error' => $e->getMessage()], 500);
 }
+```
+
+## ⚡ Optimización: Chrome Pool (Avanzado)
+
+Para proyectos que generan **muchos PDFs simultáneamente** (>10/min), puedes usar el **Chrome Pool** para reutilizar instancias de Chrome y reducir el tiempo de generación de **~4s a ~1.5s**.
+
+### Configuración
+
+```php
+use Lopezsoft\PdfExcelGenerator\Services\ChromePool;
+
+// En AppServiceProvider::boot() o al inicio de tu aplicación
+ChromePool::getInstance()->start();
+
+// Usar normalmente (automáticamente detecta el pool)
+$pdf = PdfExcelGenerator::html($html)->savePdf('output.pdf');
+
+// Al finalizar la aplicación (opcional, Laravel lo hace automáticamente)
+ChromePool::getInstance()->stop();
+```
+
+### Cuándo Usar Chrome Pool
+
+✅ **SÍ usar si:**
+- Generas >10 PDFs por minuto
+- Tu aplicación tiene alta concurrencia
+- Tienes un worker dedicado para PDFs
+
+❌ **NO usar si:**
+- Generas PDFs esporádicamente (<5/min)
+- Tu servidor tiene memoria limitada (<2GB RAM)
+- Solo generas PDFs bajo demanda del usuario
+
+**Advertencia:** El pool mantiene Chrome en memoria (~150MB). Solo usar si el beneficio de rendimiento justifica el consumo de recursos.
 ```
 
 ## 📚 API Reference

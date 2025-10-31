@@ -11,5 +11,6 @@ phpunit.xml
 .php-cs-fixer.cache
 /test-output/
 test-manual.php
+test-improvements.php
 generate-test-files.php
 package-lock.json

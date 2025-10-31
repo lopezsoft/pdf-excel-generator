@@ -7,6 +7,7 @@ namespace Lopezsoft\PdfExcelGenerator\Exporters;
 use Spatie\Browsershot\Browsershot;
 use Lopezsoft\PdfExcelGenerator\Exceptions\ChromeNotFoundException;
 use Lopezsoft\PdfExcelGenerator\Exceptions\ExportException;
+use Lopezsoft\PdfExcelGenerator\Exceptions\InvalidPdfException;
 
 /**
  * Exportador de PDFs usando spatie/browsershot.
@@ -26,6 +27,18 @@ class PdfExporter extends AbstractExporter
      * @var array<string, mixed>
      */
     private array $options = [];
+
+    /**
+     * Márgenes del PDF.
+     *
+     * @var array{top: int, right: int, bottom: int, left: int}
+     */
+    private array $margins = [
+        'top' => 10,
+        'right' => 10,
+        'bottom' => 10,
+        'left' => 10,
+    ];
 
     /**
      * Establece el path de Chrome.
@@ -52,6 +65,18 @@ class PdfExporter extends AbstractExporter
     }
 
     /**
+     * Establece los márgenes del PDF.
+     *
+     * @param array{top: int, right: int, bottom: int, left: int} $margins
+     * @return self
+     */
+    public function setMargins(array $margins): self
+    {
+        $this->margins = $margins;
+        return $this;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function validate(): bool
@@ -73,9 +98,17 @@ class PdfExporter extends AbstractExporter
     protected function generate(): string
     {
         try {
-            $browsershot = Browsershot::html($this->html)
+            // Normalizar HTML antes de renderizar (reduce tamaño y espacios excesivos)
+            $normalizedHtml = $this->normalizeHtml($this->html);
+            
+            $browsershot = Browsershot::html($normalizedHtml)
                 ->format($this->format)
-                ->margins(10, 10, 10, 10);
+                ->margins(
+                    $this->margins['top'],
+                    $this->margins['right'],
+                    $this->margins['bottom'],
+                    $this->margins['left']
+                );
 
             // Configurar Chrome path si está especificado
             if ($this->chromePath !== null) {
@@ -141,5 +174,51 @@ class PdfExporter extends AbstractExporter
         // Este método será llamado desde save() que ya tiene el filename
         // Por ahora retornamos un default para validación
         return 'output.pdf';
+    }
+
+    /**
+     * Normaliza HTML eliminando espacios innecesarios.
+     *
+     * Puppeteer renderiza HTML más literalmente que mPDF, causando espacios excesivos
+     * por la indentación de Blade. Esta normalización reduce tamaño y mejora renderizado.
+     *
+     * @param string $html HTML original
+     * @return string HTML normalizado
+     */
+    private function normalizeHtml(string $html): string
+    {
+        // Remover espacios entre tags (Blade genera indentación excesiva)
+        $html = preg_replace('/>\s+</', '><', $html);
+        
+        // Normalizar espacios múltiples a uno solo
+        $html = preg_replace('/\s+/u', ' ', $html);
+        
+        // Remover espacio antes de tags de apertura/cierre
+        $html = preg_replace('/ <(?=\w|\/)/u', '<', $html);
+        
+        return $html;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Valida que el PDF generado sea válido verificando su header.
+     *
+     * @param string $content
+     * @throws InvalidPdfException
+     */
+    protected function validateGeneratedContent(string $content): void
+    {
+        parent::validateGeneratedContent($content);
+
+        // Validar header PDF (%PDF-x.x)
+        if (substr($content, 0, 4) !== '%PDF') {
+            throw InvalidPdfException::invalidHeader($content);
+        }
+
+        // Validar tamaño mínimo (un PDF válido tiene al menos 100 bytes)
+        if (strlen($content) < 100) {
+            throw InvalidPdfException::invalidSize(strlen($content));
+        }
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Lopezsoft\PdfExcelGenerator\Contracts\ExporterInterface;
 use Lopezsoft\PdfExcelGenerator\Contracts\ExportResultInterface;
 use Lopezsoft\PdfExcelGenerator\Exceptions\ExportException;
+use Lopezsoft\PdfExcelGenerator\Exceptions\InvalidPdfException;
 use Lopezsoft\PdfExcelGenerator\Results\ExportResult;
 use Lopezsoft\PdfExcelGenerator\Validators\PathValidator;
 
@@ -111,6 +112,9 @@ abstract class AbstractExporter implements ExporterInterface
         // Generar el contenido
         $content = $this->generate();
 
+        // Validar integridad del contenido generado
+        $this->validateGeneratedContent($content);
+
         // Guardar en el disco
         $saved = Storage::disk($this->disk)->put($sanitizedFilename, $content);
 
@@ -173,4 +177,21 @@ abstract class AbstractExporter implements ExporterInterface
      * @return string
      */
     abstract protected function getMissingDataType(): string;
+
+    /**
+     * Valida el contenido generado.
+     *
+     * Template Method: puede ser sobrescrito por las clases hijas para validaciones específicas.
+     *
+     * @param string $content Contenido generado
+     * @throws InvalidPdfException Si el contenido es inválido
+     */
+    protected function validateGeneratedContent(string $content): void
+    {
+        // Las clases hijas pueden sobrescribir este método para validaciones específicas
+        // Por defecto, solo verificamos que no esté vacío
+        if (empty($content)) {
+            throw ExportException::streamFailed('Generated content is empty');
+        }
+    }
 }

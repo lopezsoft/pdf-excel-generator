@@ -54,6 +54,18 @@ class PdfExcelGenerator
     private ?string $chromePath = null;
 
     /**
+     * Márgenes del PDF.
+     *
+     * @var array{top: int, right: int, bottom: int, left: int}
+     */
+    private array $margins = [
+        'top' => 10,
+        'right' => 10,
+        'bottom' => 10,
+        'left' => 10,
+    ];
+
+    /**
      * Constructor.
      *
      * @param array<string, mixed> $config Configuración del paquete
@@ -137,6 +149,38 @@ class PdfExcelGenerator
     }
 
     /**
+     * Establece los márgenes del PDF (todos iguales).
+     *
+     * @param int $margin Margen en milímetros para todos los lados
+     * @return self
+     */
+    public function margins(int $margin): self
+    {
+        $this->margins = [
+            'top' => $margin,
+            'right' => $margin,
+            'bottom' => $margin,
+            'left' => $margin,
+        ];
+        return $this;
+    }
+
+    /**
+     * Establece los márgenes del PDF individualmente.
+     *
+     * @param int $top Margen superior en milímetros
+     * @param int $right Margen derecho en milímetros
+     * @param int $bottom Margen inferior en milímetros
+     * @param int $left Margen izquierdo en milímetros
+     * @return self
+     */
+    public function customMargins(int $top, int $right, int $bottom, int $left): self
+    {
+        $this->margins = compact('top', 'right', 'bottom', 'left');
+        return $this;
+    }
+
+    /**
      * Guarda como PDF y retorna el resultado.
      *
      * @param string $filename Nombre del archivo (con extensión .pdf)
@@ -152,6 +196,7 @@ class PdfExcelGenerator
         $this->pdfExporter
             ->setFormat($this->format)
             ->setDisk($this->disk)
+            ->setMargins($this->margins)
             ->setChromePath($this->chromePath);
 
         return $this->pdfExporter->save($filename);
@@ -193,6 +238,7 @@ class PdfExcelGenerator
 
         $this->pdfExporter
             ->setFormat($this->format)
+            ->setMargins($this->margins)
             ->setChromePath($this->chromePath);
 
         return $this->pdfExporter->stream();
