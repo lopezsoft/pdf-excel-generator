@@ -129,7 +129,9 @@ class PdfExporter extends AbstractExporter
                     $this->margins['bottom'],
                     $this->margins['left']
                 )
-                ->showBackground($this->printBackground);
+                ->showBackground($this->printBackground)
+                ->noSandbox() // Requerido para servidores Linux
+                ->setOption('args', ['--disable-dev-shm-usage']); // Previene errores de memoria compartida
 
             // Configurar Chrome path: usar el especificado manualmente, o el de configuración, o detección automática
             $chromePath = $this->chromePath ?? config('pdf-excel-generator.chrome_path');

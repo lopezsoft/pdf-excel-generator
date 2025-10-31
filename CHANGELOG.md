@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.4] - 2025-10-31
+
+### Fixed
+- **CRITICAL:** Added `--no-sandbox` and `--disable-dev-shm-usage` flags for Linux servers
+- Chrome now works correctly on Ubuntu/Debian servers without X11
+- Fixed "Chrome/Chromium not found" error on production servers
+- Prevents shared memory errors on servers with limited /dev/shm
+
+### Changed
+- `PdfExporter` now automatically adds required Chrome flags for server environments
+- Better compatibility with headless servers and Docker containers
+
 ## [1.2.3] - 2025-10-31
 
 ### Fixed
@@ -152,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PSR-4 autoloading
 - PSR-12 code style
 
-[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/lopezsoft/pdf-excel-generator/compare/v1.2.0...v1.2.1
